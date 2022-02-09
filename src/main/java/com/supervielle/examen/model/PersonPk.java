@@ -20,16 +20,11 @@ public class PersonPk implements Serializable {
     @OneToOne
     @JoinColumn(name = "DOCTYPEID")
     private DocumentType documentTypeId;
-
-    @OneToOne
-    @JoinColumn(name = "DOCUMENTNUMBER")
-    private DocumentPerson documentNumber;
-
-
     @OneToOne
     @JoinColumn(name = "COUNTRYID")
     private  Country countryCode;
-
+    @Column(name="DOCUMENTNUMBER")
+    private String documentNumber;
     @Column(name="GENRE")
     private String genre;
 
@@ -41,18 +36,18 @@ public class PersonPk implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PersonPk personPk = (PersonPk) o;
-        return Objects.equals(documentTypeId, personPk.documentTypeId) && Objects.equals(documentNumber, personPk.documentNumber) && Objects.equals(countryCode, personPk.countryCode) && Objects.equals(genre, personPk.genre);
+        return Objects.equals(documentTypeId, personPk.documentTypeId) && Objects.equals(countryCode, personPk.countryCode) && Objects.equals(documentNumber, personPk.documentNumber) && Objects.equals(genre, personPk.genre);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(documentTypeId, documentNumber, countryCode, genre);
+        return Objects.hash(documentTypeId, countryCode, documentNumber, genre);
     }
 
-    public PersonPk(DocumentType documentTypeId, DocumentPerson documentNumber, Country countryCode, String genre) {
+    public PersonPk(DocumentType documentTypeId, Country countryCode, String documentNumber, String genre) {
         this.documentTypeId = documentTypeId;
-        this.documentNumber = documentNumber;
         this.countryCode = countryCode;
+        this.documentNumber = documentNumber;
         this.genre = genre;
     }
 }

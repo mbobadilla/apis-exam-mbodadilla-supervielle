@@ -19,15 +19,21 @@ public class Persons implements Serializable {
 
     @EmbeddedId
     private PersonPk personPk;
+    @Column(name ="FIRSTNAME")
+    private String firstName;
+    @Column(name ="LASTNAME")
+    private String lastName;
 
 
 
     public Persons() {
     }
 
-    public Persons(PersonPk personPk) {
+
+
+    public Persons(PersonPk personPk,  String firstName, String lastName) {
         this.personPk = personPk;
-
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
-
 }

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(name = "Credit cards", description = "Credit cards")
+@Schema(name = "Persons", description = "Persons")
 public class PersonRequest {
 
     private String documentType;

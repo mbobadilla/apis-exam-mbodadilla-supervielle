@@ -1,125 +1,101 @@
 package com.supervielle.examen.service;
-import com.supervielle.examen.exception.NotFoundException;
-import com.supervielle.examen.exception.FoundPersonException;
-import com.supervielle.examen.model.*;
+
 import com.supervielle.examen.api.v1.request.PersonRequest;
+import com.supervielle.examen.exception.CustomerNotFoundException;
+import com.supervielle.examen.exception.ErrorCode;
+import com.supervielle.examen.exception.ResourceNotFoundException;
+import com.supervielle.examen.model.Country;
+import com.supervielle.examen.model.DocumentType;
+import com.supervielle.examen.model.PersonPk;
+import com.supervielle.examen.model.Persons;
 import com.supervielle.examen.repositories.CountryRepository;
-import com.supervielle.examen.repositories.DocumentPersonRepository;
 import com.supervielle.examen.repositories.DocumentTypeRepository;
 import com.supervielle.examen.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.print.attribute.standard.DocumentName;
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PersonServiceImpl implements PersonService{
+public class PersonServiceImpl implements PersonService {
     @Autowired
     PersonRepository personRepository;
     @Autowired
     CountryRepository countryRepository;
     @Autowired
     DocumentTypeRepository documentTypeRepository;
-    @Autowired
-    DocumentPersonRepository documentPersonRepository;
+
 
     @Override
-    public Persons createPerson(PersonRequest personRequest) throws NotFoundException, FoundPersonException {
+    public Persons createPerson(PersonRequest personRequest) {
+        Persons persons = getPerson(personRequest);
+        return personRepository.save(persons);
+
+
+    }
+
+    @Override
+    public Persons getPersonsById(PersonRequest personRequest) {
         PersonPk pk = getPersonPk(personRequest);
-        Optional<Persons> person = personRepository.findById(pk);
-        if(!person.isPresent()){
-            return personRepository.save(getPerson(personRequest));
-        }else{
-            throw new FoundPersonException();
-        }
-
-
+        return personRepository.findById(pk).get();
 
     }
 
     @Override
-    public Persons getPersonsById(PersonRequest personRequest) throws NotFoundException {
-        PersonPk pk = getPersonPk(personRequest);
-        Optional<Persons> person = personRepository.findById(pk);
-        if(person.isPresent()){
-            return person.get();
-        }else {
-            throw new NotFoundException();
-        }
+    public Persons updatePerson(PersonRequest personRequest, String docNumber) {
+
+       Optional<Persons> persons=personRepository.findByPersonPkDocumentNumber(docNumber);
+       if(persons.isPresent()){
+           personRepository.delete(persons.get());
+           return personRepository.save(getPerson(personRequest));
+       }else{
+           throw new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND);
+       }
     }
 
     @Override
-    public Persons updatePerson(PersonRequest personRequest,String docNumber) throws NotFoundException, FoundPersonException {
-        Optional<DocumentPerson> documentPerson =documentPersonRepository.findByDocumentNumber(docNumber);
-        if(documentPerson.isPresent()){
-            Persons person =getPerson(personRequest);
-            return personRepository.save(person);
+    public void deletePerson(PersonRequest personRequest) {
+        Optional<Persons> persons=personRepository.findById(getPersonPk(personRequest));
+        if(persons.isPresent()){
+            personRepository.delete(persons.get());
         }else{
-            throw new NotFoundException();
-        }
-
-    }
-
-    @Override
-    public void deletePerson(PersonRequest personRequest) throws NotFoundException, FoundPersonException {
-        Optional<DocumentPerson> documentPerson =documentPersonRepository.findByDocumentNumber(personRequest.getDocumentNumber());
-        if(documentPerson.isPresent()){
-            personRepository.delete(getPerson(personRequest));
-        }else{
-            throw new NotFoundException();
+            throw new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND);
         }
 
 
-    }
-    private Persons getPerson(PersonRequest personRequest) throws FoundPersonException, NotFoundException {
-        Persons persons =new Persons(getPersonPk(personRequest));
 
-        return persons;
     }
 
-    private Country getCountry(String name) throws NotFoundException {
-        Optional<Country>country=countryRepository.findByName(name);
-        if(!country.isPresent()){
-            throw new NotFoundException();
+    private Persons getPerson(PersonRequest personRequest) {
+        PersonPk personPk = getPersonPk(personRequest);
+        return new Persons(personPk, personRequest.getFirstName(), personRequest.getLastName());
+
+
+    }
+
+    private Country getCountry(String name) {
+        Optional<Country> country = countryRepository.findByName(name);
+        if (!country.isPresent()) {
+            throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
         }
         return country.get();
 
     }
 
-    private DocumentType getDocumentType(String type) throws NotFoundException {
-        Optional<DocumentType>documentType=documentTypeRepository.findByType(type);
-        if(!documentType.isPresent()){
-            throw new NotFoundException();
+    private DocumentType getDocumentType(String type) {
+        Optional<DocumentType> documentType = documentTypeRepository.findByType(type);
+        if (!documentType.isPresent()) {
+            throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
         }
         return documentType.get();
 
     }
 
-    private DocumentPerson getDocumentPerson(PersonRequest personRequest)  {
-        Optional<DocumentPerson>documentPerson=documentPersonRepository.findByDocumentNumber(personRequest.getDocumentNumber());
-        if(!documentPerson.isPresent()){
-            return documentPersonRepository.save(new DocumentPerson(personRequest.getDocumentNumber(),personRequest.getFirstName(),personRequest.getLastName()));
 
-        }
-        return documentPerson.get();
-
-    }
-    PersonPk getPersonPk(PersonRequest personRequest) throws NotFoundException {
-        Country country= null;
-        DocumentType documentType= null;
-        DocumentPerson documentPerson=null;
-        try {
-            country = getCountry(personRequest.getCountryCode());
-            documentType = getDocumentType(personRequest.getDocumentType());
-
-        } catch (NotFoundException e) {
-            throw new NotFoundException();
-        }
-        documentPerson=getDocumentPerson(personRequest);
-
-        return new PersonPk(documentType,documentPerson,country,personRequest.getGenre());
+    PersonPk getPersonPk(PersonRequest personRequest) {
+        Country country = getCountry(personRequest.getCountryCode());
+        DocumentType documentType = getDocumentType(personRequest.getDocumentType());
+        return new PersonPk(documentType, country, personRequest.getDocumentNumber(), personRequest.getGenre());
     }
 
 }

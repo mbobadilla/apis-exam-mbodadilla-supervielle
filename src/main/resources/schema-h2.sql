@@ -11,33 +11,37 @@ CREATE TABLE IF NOT EXISTS document_type(
  );
 
 
-CREATE TABLE document_person(
-documentNumber CHAR(15) NOT NULL UNIQUE,
-firstName CHAR(20) NOT NULL,
-lastName CHAR(30) NOT NULL,
-PRIMARY KEY(documentNumber)
-);
 
 
-CREATE TABLE IF NOT EXISTS persons(
-  docTypeId int not null,
 
-   FOREIGN KEY (docTypeId )
-            REFERENCES document_type(id),
+    CREATE TABLE IF NOT EXISTS persons(
+          docTypeId int not null,
 
-     documentNumber CHAR(15) NOT NULL,
+           FOREIGN KEY (docTypeId )
+                    REFERENCES document_type(id),
 
-     countryId char(3) NOT NULL,
-     FOREIGN KEY (countryId )
-                REFERENCES country_iso3166_1(code),
+             documentNumber CHAR(15) NOT NULL UNIQUE,
 
-     genre CHAR(1) NOT NULL,
+             countryId char(3) NOT NULL,
+             FOREIGN KEY (countryId )
+                        REFERENCES country_iso3166_1(code),
 
-PRIMARY KEY(docTypeId ,documentNumber ,countryId,genre));
+             genre CHAR(1) NOT NULL,
+            firstName VARCHAR(20) NOT NULL,
+            lastName VARCHAR(30) NOT NULL,
+
+
+
+        PRIMARY KEY(docTypeId ,documentNumber ,countryId,genre));
 
 CREATE INDEX document_number_id ON persons(documentNumber);
+CREATE INDEX country_id ON persons(countryId);
+CREATE INDEX doctype_id ON persons(docTypeId);
 
-alter table persons add constraint persons_fk_1 FOREIGN KEY(documentNumber) REFERENCES document_person(documentNumber);
+CREATE TABLE IF NOT EXISTS user (
+    username VARCHAR(45) NULL,
+    password TEXT NULL,
+    PRIMARY KEY (username));
 
 
 
