@@ -1,7 +1,7 @@
 # apis-exam-mbodadilla-supervielle
 # Datos de conexion:
- _ _ usuario:dmaradona
-  password:mexico86
+ **usuario:dmaradona**
+  **password:mexico86**
 
 # Url a la aplicacion
 host:8081/exams/mbobadilla
