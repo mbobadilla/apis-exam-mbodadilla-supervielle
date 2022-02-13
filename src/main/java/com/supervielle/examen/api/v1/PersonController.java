@@ -82,7 +82,7 @@ public class PersonController {
     }
 
     @PostMapping(value = "/persons/person/delete", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    // https://www.dariawan.com/tutorials/spring/documenting-spring-boot-rest-api-springdoc-openapi-3/
+
     @Operation(summary = "Delete Person by Id")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Person deleted", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = Persons.class))}),

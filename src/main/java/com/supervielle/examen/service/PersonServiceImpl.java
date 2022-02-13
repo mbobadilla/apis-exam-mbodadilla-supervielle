@@ -37,7 +37,12 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Persons getPersonsById(PersonRequest personRequest) {
         PersonPk pk = getPersonPk(personRequest);
-        return personRepository.findById(pk).get();
+        Optional<Persons> person= personRepository.findById(pk);
+        if(person.isPresent()){
+            return person.get();
+        }else{
+            throw new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
 
     }
 
@@ -66,6 +71,11 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
+    /**
+     * build a Persons object from a PersonRequest object
+     * @param personRequest
+     * @return
+     */
     private Persons getPerson(PersonRequest personRequest) {
         PersonPk personPk = getPersonPk(personRequest);
         return new Persons(personPk, personRequest.getFirstName(), personRequest.getLastName());
@@ -73,6 +83,11 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
+    /**
+     * get a Country code object from your name country
+     * @param name
+     * @return
+     */
     private Country getCountry(String name) {
         Optional<Country> country = countryRepository.findByName(name);
         if (!country.isPresent()) {
@@ -82,6 +97,11 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
+    /**
+     * get a DocumentType object from a String type
+     * @param type
+     * @return
+     */
     private DocumentType getDocumentType(String type) {
         Optional<DocumentType> documentType = documentTypeRepository.findByType(type);
         if (!documentType.isPresent()) {
@@ -91,11 +111,17 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
+    /**
+     * get personPk object by a PersonRequest
+     * @param personRequest
+     * @return PersonPk
+     */
 
-    PersonPk getPersonPk(PersonRequest personRequest) {
+    private PersonPk getPersonPk(PersonRequest personRequest) {
         Country country = getCountry(personRequest.getCountryCode());
         DocumentType documentType = getDocumentType(personRequest.getDocumentType());
         return new PersonPk(documentType, country, personRequest.getDocumentNumber(), personRequest.getGenre());
     }
+
 
 }

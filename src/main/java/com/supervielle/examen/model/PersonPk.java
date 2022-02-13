@@ -50,4 +50,6 @@ public class PersonPk implements Serializable {
         this.documentNumber = documentNumber;
         this.genre = genre;
     }
+
+
 }

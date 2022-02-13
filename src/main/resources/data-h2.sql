@@ -18,6 +18,6 @@ INSERT INTO persons (docTypeId,documentNumber ,countryId ,genre,firstName,lastNa
 INSERT INTO persons (docTypeId,documentNumber ,countryId ,genre,firstName,lastName) VALUES (1,'30123328','032','M','Jorge Luis','Borges');
 INSERT INTO persons (docTypeId,documentNumber ,countryId ,genre,firstName,lastName) VALUES (3,'30123330','032','F','Sebastian','Arguello');
 
-INSERT INTO user (username,password) VALUES('lmessi','realmadrid');
-INSERT INTO user (username,password) VALUES('dmaradona','mexico86');
+INSERT INTO user (username,password) VALUES('lmessi','$2a$10$Dr3h3dx38nAeW2O8orPUoeFQOcdZxsTqvOWbjATs2Cy53u9/U8Be6');
+INSERT INTO user (username,password) VALUES('dmaradona','$2a$10$yPT7gvwYIPBZ9WPdbffwn.uGz6kx9SrSeMvHcqMEimtEg3Opn3Np2');
 
